@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login — Brainware University Weather</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:'DM Sans',sans-serif;color:#fff}
+.bg{position:fixed;inset:0;background-image:url('16456894771621585248phpiFPZVP.webp');background-size:cover;background-position:center;animation:bgZoom 20s ease-in-out infinite alternate}
+@keyframes bgZoom{from{transform:scale(1)}to{transform:scale(1.08)}}
+.bg-overlay{position:fixed;inset:0;background:linear-gradient(135deg,rgba(0,10,40,0.92) 0%,rgba(0,20,64,0.75) 50%,rgba(0,10,30,0.92) 100%)}
+.page{position:relative;z-index:1;height:100vh;display:flex}
+.left{flex:1;display:none;flex-direction:column;justify-content:center;padding:60px}
+@media(min-width:900px){.left{display:flex}}
+.left-tag{font-size:11px;letter-spacing:3px;text-transform:uppercase;opacity:0.45;margin-bottom:20px}
+.left-title{font-family:'Playfair Display',serif;font-size:clamp(36px,4vw,56px);font-weight:900;line-height:1.15;margin-bottom:16px}
+.left-title em{font-style:italic;color:#90c4ff}
+.left-desc{font-size:15px;opacity:0.55;line-height:1.75;max-width:380px;margin-bottom:40px;font-weight:300}
+.campus-img{width:100%;max-width:400px;border-radius:20px;object-fit:cover;height:220px;border:1px solid rgba(255,255,255,0.1);filter:brightness(0.8);box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+.img-caption{font-size:11px;opacity:0.3;margin-top:10px;letter-spacing:1px}
+.right{display:flex;align-items:center;justify-content:center;padding:24px;width:100%}
+@media(min-width:900px){.right{width:460px;flex-shrink:0}}
+.card{width:100%;max-width:420px;background:rgba(0,10,40,0.7);border:1px solid rgba(255,255,255,0.1);border-radius:28px;padding:44px 40px;backdrop-filter:blur(28px);box-shadow:0 32px 80px rgba(0,0,0,0.5);animation:slideUp 0.6s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+.card-logo{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.card-logo img{width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.2);box-shadow:0 4px 16px rgba(0,0,0,0.4)}
+.card-logo-text h2{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;line-height:1.2}
+.card-logo-text p{font-size:10px;letter-spacing:2px;text-transform:uppercase;opacity:0.45;margin-top:2px}
+.card-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:900;margin-bottom:4px}
+.card-sub{font-size:13px;opacity:0.45;margin-bottom:28px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;opacity:0.5;margin-bottom:7px;font-weight:600}
+.field input{width:100%;padding:14px 18px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:14px;color:#fff;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:all 0.3s}
+.field input::placeholder{color:rgba(255,255,255,0.3)}
+.field input:focus{background:rgba(255,255,255,0.12);border-color:rgba(0,120,255,0.5);box-shadow:0 0 0 3px rgba(0,120,255,0.1)}
+.btn{width:100%;padding:15px;background:linear-gradient(135deg,#0047ab,#1a6fd4);border:none;border-radius:14px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;margin-top:4px;box-shadow:0 8px 24px rgba(0,71,171,0.4)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,71,171,0.5)}
+.btn:active{transform:translateY(0)}
+.btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;box-shadow:none}
+.msg{text-align:center;padding:12px;border-radius:12px;margin-top:14px;font-size:13px;display:none}
+.msg.success{background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:#86efac;display:block}
+.msg.error{background:rgba(200,16,46,0.15);border:1px solid rgba(200,16,46,0.3);color:#ff8fa3;display:block}
+.bottom-link{text-align:center;margin-top:22px;font-size:13px;opacity:0.5}
+.bottom-link a{color:#fff;font-weight:700;opacity:1;text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.3);padding-bottom:1px}
+.bottom-link a:hover{border-color:#fff}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top:2px solid #fff;border-radius:50%;animation:spin 0.6s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.08)}
+.divider span{font-size:11px;opacity:0.3;letter-spacing:1px}
+.live-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,71,171,0.2);border:1px solid rgba(0,71,171,0.3);border-radius:50px;padding:5px 14px;font-size:11px;letter-spacing:1px;color:#90c4ff;margin-bottom:20px}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;box-shadow:0 0 6px #22c55e;animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="bg-overlay"></div>
+<div class="page">
+  <div class="left">
+    <div class="live-badge"><div class="live-dot"></div>LIVE WEATHER DATA</div>
+    <div class="left-tag">Brainware University</div>
+    <h1 class="left-title">Welcome<br><em>Back</em> to<br>Campus</h1>
+    <p class="left-desc">Login to access real-time weather intelligence, health alerts, and campus environment data for Brainware University.</p>
+    <img class="campus-img" src="Brainware-university.jpg" alt="Brainware University">
+    <div class="img-caption">BRAINWARE UNIVERSITY · BARASAT, WEST BENGAL</div>
+  </div>
+  <div class="right">
+    <div class="card">
+      <div class="card-logo">
+        <img src="unnamed.jpg" alt="BWU Logo">
+        <div class="card-logo-text">
+          <h2>Brainware University</h2>
+          <p>Weather Station</p>
+        </div>
+      </div>
+      <div class="card-title">Welcome Back</div>
+      <div class="card-sub">Login to your BWU Weather account</div>
+      <div class="field"><label>Email Address</label><input type="email" id="email" placeholder="Enter your email"></div>
+      <div class="field"><label>Password</label><input type="password" id="password" placeholder="Enter your password"></div>
+      <button class="btn" id="login-btn" onclick="login()">Login to Dashboard</button>
+      <div class="msg" id="msg"></div>
+      <div class="divider"><span>OR</span></div>
+      <div class="bottom-link">Don't have an account? <a href="register.html">Register here</a></div>
+    </div>
+  </div>
+</div>
+<script>
+const BASE='https://bwu-weather.onrender.com';
+async function login(){
+  const email=document.getElementById('email').value.trim();
+  const password=document.getElementById('password').value.trim();
+  const btn=document.getElementById('login-btn');
+  const msg=document.getElementById('msg');
+  if(!email||!password){msg.className='msg error';msg.textContent='⚠️ Please fill in all fields.';return}
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Logging in...';msg.className='msg';
+  try{
+    const res=await fetch(`${BASE}/api/auth/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+    const data=await res.json();
+    if(res.ok){
+      msg.className='msg success';msg.textContent='✅ Login successful! Redirecting...';
+      localStorage.setItem('loggedIn','true');
+      if(data.name)localStorage.setItem('userName',data.name);
+      setTimeout(()=>{window.location.href='index.html'},1500);
+    }else{msg.className='msg error';msg.textContent='❌ '+(data.error||'Login failed. Try again.');btn.disabled=false;btn.textContent='Login to Dashboard';}
+  }catch(e){msg.className='msg error';msg.textContent='❌ Server error. Check your connection.';btn.disabled=false;btn.textContent='Login to Dashboard';}
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter')login()});
+</script>
+</body>
+</html>
