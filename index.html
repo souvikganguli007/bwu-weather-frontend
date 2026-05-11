@@ -208,6 +208,7 @@ footer img{width:44px;height:44px;border-radius:50%;object-fit:cover;margin-bott
         <button class="nav-link active">🌤 Weather</button>
         <button class="nav-link" onclick="document.querySelector('.campus-section').scrollIntoView({behavior:'smooth'})">🎓 Campus</button>
         <button class="nav-link" onclick="document.getElementById('history-card').scrollIntoView({behavior:'smooth'})">📜 History</button>
+        <button class="nav-link" style="background:rgba(200,16,46,0.15);border-color:rgba(200,16,46,0.4);color:#ff8fa3" onclick="logout()">🚪 Logout</button>
       </div>
     </nav>
 
@@ -349,7 +350,7 @@ footer img{width:44px;height:44px;border-radius:50%;object-fit:cover;margin-bott
 
 <footer>
   <img src="unnamed.jpg" alt="BWU Logo">
-  <p>© 2025 <span>Brainware University Weather Station</span></p>
+  <p>© 2026 <span>Brainware University Weather Station</span></p>
   <p>Built with ❤️ by Students · Powered by OpenWeatherMap · Barasat, West Bengal</p>
 </footer>
 
@@ -357,6 +358,13 @@ footer img{width:44px;height:44px;border-radius:50%;object-fit:cover;margin-bott
 const BASE='https://bwu-weather.onrender.com';
 if(!localStorage.getItem('loggedIn')){window.location.href='register.html';}
 let chart;
+
+function logout(){
+  localStorage.removeItem('loggedIn');
+  localStorage.removeItem('userName');
+  localStorage.removeItem('preferredCity');
+  window.location.href='login.html';
+}
 
 // Clock
 function updateClock(){
