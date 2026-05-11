@@ -149,6 +149,16 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:22px 4
 .photo-strip img:hover{transform:scale(1.02);filter:brightness(0.95) saturate(1.1);box-shadow:0 12px 40px rgba(0,0,0,0.5)}
 @media(max-width:600px){.photo-strip{grid-template-columns:1fr}}
 
+/* MUSIC PLAYER */
+.music-section{display:none;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:24px;padding:28px;backdrop-filter:blur(16px);margin-bottom:20px}
+.music-section.show{display:block;animation:fadeUp 0.5s ease}
+.music-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.music-title{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:700}
+.music-mood{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:50px;padding:6px 16px;font-size:13px}
+.music-mood-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;animation:blink 1.5s infinite}
+.yt-frame{width:100%;height:152px;border-radius:16px;border:none;overflow:hidden}
+.music-note{font-size:11px;opacity:0.35;margin-top:10px;text-align:center}
+
 /* HISTORY */
 .history-list{display:flex;flex-direction:column;gap:8px}
 .hi-item{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:13px 18px;transition:background 0.2s}
@@ -312,6 +322,16 @@ footer img{width:44px;height:44px;border-radius:50%;object-fit:cover;margin-bott
     </div>
   </div>
 
+<!-- Music Player -->
+<div class="music-section" id="music-section">
+  <div class="music-top">
+    <div class="music-title"><div class="s-dot"></div>🎵 Weather Mood Music</div>
+    <div class="music-mood"><div class="music-mood-dot"></div><span id="music-mood-label">Loading...</span></div>
+  </div>
+  <iframe id="yt-frame" class="yt-frame" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+  <div class="music-note">🎧 Music automatically selected based on current weather conditions</div>
+</div>
+
   <!-- Campus photo strip -->
   <div class="photo-strip">
     <img src="Brainware-university.jpg" alt="Brainware University — Building A">
@@ -420,6 +440,28 @@ function buildChart(temp){
   });
 }
 
+function loadMusic(condition){
+  const c=condition.toLowerCase();
+  let videoId, mood;
+  if(c.includes('thunder')){
+    videoId='zcSTSPjF11c';mood='⛈️ Storm Ambient';
+  }else if(c.includes('rain')||c.includes('drizzle')){
+    videoId='mPZkdNFkNps';mood='🌧️ Rainy Day Lo-Fi';
+  }else if(c.includes('snow')){
+    videoId='5yx6BWlEVcY';mood='❄️ Winter Peaceful';
+  }else if(c.includes('cloud')||c.includes('mist')||c.includes('fog')){
+    videoId='lTRiuFIWV54';mood='⛅ Cloudy Indie Chill';
+  }else if(c.includes('clear')){
+    videoId='5qap5aO4i9A';mood='☀️ Sunny Lo-Fi Beats';
+  }else{
+    videoId='5qap5aO4i9A';mood='🌤️ Good Vibes';
+  }
+  document.getElementById('yt-frame').src=
+    `https://www.youtube.com/embed/${videoId}?autoplay=0&controls=1&loop=1`;
+  document.getElementById('music-mood-label').textContent=mood;
+  document.getElementById('music-section').className='music-section show';
+}
+
 async function loadHealth(city){
   try{
     const res=await fetch(`${BASE}/api/weather/health/${encodeURIComponent(city)}`);
@@ -467,6 +509,7 @@ async function getWeather(cityOverride){
     showCards(true);
     loadHistory();
     loadHealth(d.city);
+    loadMusic(d.condition);
     const saved=localStorage.getItem('preferredCity');
     document.getElementById('save-btn').textContent=saved&&saved.toLowerCase()===d.city.toLowerCase()?'⭐ Preferred Location':'⭐ Save as Preferred Location';
     document.querySelector('.main').scrollIntoView({behavior:'smooth'});
