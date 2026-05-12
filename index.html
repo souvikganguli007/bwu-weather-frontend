@@ -312,13 +312,6 @@ footer img{width:44px;height:44px;border-radius:50%;object-fit:cover;margin-bott
     </div>
   </div>
 
-<div id="ai-section" style="display:none">
-  <div class="section-card" style="margin-bottom:20px">
-    <div class="s-title"><div class="s-dot"></div>🤖 AI Weather Reporter</div>
-    <div id="ai-report-content"></div>
-  </div>
-</div>
-
   <!-- Campus photo strip -->
   <div class="photo-strip">
     <img src="Brainware-university.jpg" alt="Brainware University — Building A">
@@ -474,7 +467,6 @@ async function getWeather(cityOverride){
     showCards(true);
     loadHistory();
     loadHealth(d.city);
-    loadAIReport(d.city, d.temperature, d.condition, d.humidity, d.wind);
     const saved=localStorage.getItem('preferredCity');
     document.getElementById('save-btn').textContent=saved&&saved.toLowerCase()===d.city.toLowerCase()?'⭐ Preferred Location':'⭐ Save as Preferred Location';
     document.querySelector('.main').scrollIntoView({behavior:'smooth'});
@@ -538,29 +530,6 @@ async function deleteRecord(id){
 
 checkSaved();
 loadHistory();
-
-function loadAIReport(city, temp, condition, humidity, wind){
-  const el=document.getElementById('ai-section');
-  if(!el)return;
-  el.className='ai-section show';
-  const t=Math.round(temp),w=Math.round((wind||0)*3.6),h=humidity||50;
-  const hour=new Date().getHours();
-  const greeting=hour<12?'Good morning':hour<17?'Good afternoon':'Good evening';
-  const c=condition.toLowerCase();
-  const feels=t<10?'bitterly cold':t<15?'cool and crisp':t<20?'mild':t<28?'warm and pleasant':'hot';
-  const windDesc=w<10?'calm winds':w<20?'a gentle breeze':w<35?'moderate winds':'strong gusty winds';
-  const humDesc=h<40?'dry air conditions':h<60?'comfortable humidity':h<80?'slightly humid air':'high humidity levels';
-  let scene,advice;
-  if(c.includes('thunder')){scene=`Thunderstorms are rolling through ${city}.`;advice='Stay indoors and avoid open areas until the storm passes.';}
-  else if(c.includes('rain')||c.includes('drizzle')){scene=`Rain showers are sweeping across ${city}.`;advice='Carry an umbrella if heading out.';}
-  else if(c.includes('snow')){scene=`Snow is settling over ${city}.`;advice='Drive carefully and wrap up warm.';}
-  else if(c.includes('cloud')){scene=`Overcast skies have settled over ${city} today.`;advice='Conditions remain dry — a good day for indoor activities.';}
-  else if(c.includes('clear')||c.includes('sun')){scene=`Beautiful clear skies are stretching across ${city}.`;advice='A perfect day to step outside — sunscreen recommended!';}
-  else if(c.includes('mist')||c.includes('fog')){scene=`A thick mist has descended over ${city}.`;advice='Drive with caution — fog may reduce visibility.';}
-  else{scene=`${condition} conditions are observed across ${city}.`;advice='Stay tuned for further updates.';}
-  const report=`${greeting}! Reporting live from ${city}, where ${scene} Temperatures are at ${t}°C, feeling ${feels} with ${windDesc} at ${w} km/h. ${humDesc} at ${h}%. ${advice}`;
-  document.getElementById('ai-report-content').innerHTML=`<div class="ai-report">"${report}"</div>`;
-}
 </script>
 </body>
 </html>
