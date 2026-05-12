@@ -143,6 +143,27 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:22px 4
 .aqi-bar{height:5px;border-radius:5px;background:linear-gradient(90deg,#22c55e,#facc15,#f97316,#ef4444,#a855f7);position:relative;margin:7px 0 3px;overflow:visible}
 .aqi-marker{position:absolute;top:-4px;width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid #001440;transition:left 1s ease;box-shadow:0 2px 8px rgba(0,0,0,0.4)}
 
+/* AI REPORTER */
+.ai-section{display:none;background:linear-gradient(135deg,rgba(0,71,171,0.15) 0%,rgba(255,255,255,0.03) 100%);border:1px solid rgba(0,71,171,0.25);border-radius:24px;padding:28px;backdrop-filter:blur(16px);margin-bottom:20px}
+.ai-section.show{display:block;animation:fadeUp 0.6s ease}
+.ai-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.ai-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,71,171,0.2);border:1px solid rgba(0,71,171,0.4);border-radius:50px;padding:6px 16px;font-size:12px;color:#90c4ff;letter-spacing:1px}
+.ai-report{font-size:15px;line-height:1.9;opacity:0.85;font-style:italic;font-family:'Playfair Display',serif;padding:20px;background:rgba(255,255,255,0.04);border-left:3px solid var(--blue2);border-radius:0 14px 14px 0}
+.ai-loading{text-align:center;padding:28px;opacity:0.5;font-size:14px}
+.ai-dots{display:inline-block;animation:dots 1.5s infinite}
+@keyframes dots{0%{content:'...'}33%{content:'....'}66%{content:'.....'}100%{content:'...'}}
+.ai-reporter-name{font-size:12px;opacity:0.4;margin-top:12px;text-align:right;letter-spacing:1px}
+
+/* MUSIC PLAYER */
+.music-section{display:none;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:24px;padding:28px;backdrop-filter:blur(16px);margin-bottom:20px}
+.music-section.show{display:block;animation:fadeUp 0.5s ease}
+.music-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.music-title{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:700}
+.music-mood{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:50px;padding:6px 16px;font-size:13px}
+.music-mood-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;animation:blink 1.5s infinite}
+.yt-frame{width:100%;height:152px;border-radius:16px;border:none;overflow:hidden}
+.music-note{font-size:11px;opacity:0.35;margin-top:10px;text-align:center}
+
 /* PHOTO STRIP */
 .photo-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:48px 0}
 .photo-strip img{width:100%;height:200px;object-fit:cover;border-radius:20px;border:1px solid rgba(255,255,255,0.08);transition:all 0.3s;filter:brightness(0.75) saturate(0.9);cursor:pointer}
@@ -312,6 +333,28 @@ footer img{width:44px;height:44px;border-radius:50%;object-fit:cover;margin-bott
     </div>
   </div>
 
+  <!-- AI Reporter -->
+  <div class="ai-section" id="ai-section">
+    <div class="ai-top">
+      <div class="s-title" style="margin-bottom:0"><div class="s-dot"></div>🤖 AI Weather Reporter</div>
+      <div class="ai-badge">⚡ Live Report</div>
+    </div>
+    <div id="ai-report-content">
+      <div class="ai-loading">✍️ Writing your weather report<span class="ai-dots">...</span></div>
+    </div>
+    <div class="ai-reporter-name">— BWU Weather AI Correspondent</div>
+  </div>
+
+  <!-- Music Player -->
+  <div class="music-section" id="music-section">
+    <div class="music-top">
+      <div class="music-title"><div class="s-dot"></div>🎵 Weather Mood Music</div>
+      <div class="music-mood"><div class="music-mood-dot"></div><span id="music-mood-label">Loading...</span></div>
+    </div>
+    <iframe id="yt-frame" class="yt-frame" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <div class="music-note">🎧 Music automatically selected based on current weather conditions</div>
+  </div>
+
   <!-- Campus photo strip -->
   <div class="photo-strip">
     <img src="Brainware-university.jpg" alt="Brainware University — Building A">
@@ -445,11 +488,59 @@ async function loadHealth(city){
   }catch(e){console.log('Health unavailable')}
 }
 
+function loadAIReport(city, temp, condition, humidity, wind){
+  const el=document.getElementById('ai-section');
+  if(!el)return;
+  el.className='ai-section show';
+  const t=Math.round(temp),w=Math.round((wind||0)*3.6),h=humidity||50;
+  const hour=new Date().getHours();
+  const greeting=hour<12?'Good morning':hour<17?'Good afternoon':'Good evening';
+  const c=condition.toLowerCase();
+  const feels=t<10?'bitterly cold':t<15?'cool and crisp':t<20?'mild':t<28?'warm and pleasant':'hot';
+  const windDesc=w<10?'calm winds':w<20?'a gentle breeze':w<35?'moderate winds':'strong gusty winds';
+  const humDesc=h<40?'dry air conditions':h<60?'comfortable humidity':h<80?'slightly humid air':'high humidity levels';
+  let scene,advice;
+  if(c.includes('thunder')){scene=`Thunderstorms are rolling through ${city}.`;advice='Stay indoors and avoid open areas.';}
+  else if(c.includes('rain')||c.includes('drizzle')){scene=`Rain showers are sweeping across ${city}.`;advice='Carry an umbrella if heading out.';}
+  else if(c.includes('snow')){scene=`Snow is settling over ${city}.`;advice='Drive carefully and wrap up warm.';}
+  else if(c.includes('cloud')){scene=`Overcast skies have settled over ${city}.`;advice='Conditions remain dry — good for indoor activities.';}
+  else if(c.includes('clear')||c.includes('sun')){scene=`Beautiful clear skies over ${city}.`;advice='Perfect day to step outside — sunscreen recommended!';}
+  else if(c.includes('mist')||c.includes('fog')){scene=`A thick mist has descended over ${city}.`;advice='Drive with caution — reduced visibility.';}
+  else{scene=`${condition} conditions across ${city}.`;advice='Stay tuned for further updates.';}
+  const report=`${greeting}! Reporting live from ${city}, where ${scene} Temperatures at ${t}°C, feeling ${feels} with ${windDesc} at ${w} km/h. ${humDesc} at ${h}%. ${advice}`;
+  document.getElementById('ai-report-content').innerHTML=`<div class="ai-report">"${report}"</div>`;
+}
+
+function loadMusic(condition){
+  const c=condition.toLowerCase();
+  let videoId, mood;
+  if(c.includes('thunder')){
+    videoId='AxPz4ROFZEo';mood='⛈️ Storm Ambient';
+  }else if(c.includes('rain')||c.includes('drizzle')){
+    videoId='4oStw0r33so';mood='🌧️ Rainy Day Lo-Fi';
+  }else if(c.includes('snow')){
+    videoId='5yx6BWlEVcY';mood='❄️ Winter Peaceful';
+  }else if(c.includes('cloud')||c.includes('mist')||c.includes('fog')){
+    videoId='lTRiuFIWV54';mood='⛅ Cloudy Indie Chill';
+  }else if(c.includes('clear')){
+    videoId='jfKfPfyJRdk';mood='☀️ Sunny Lo-Fi Beats';
+  }else{
+    videoId='jfKfPfyJRdk';mood='🌤️ Good Vibes';
+  }
+  document.getElementById('yt-frame').src=
+    `https://www.youtube.com/embed/${videoId}?autoplay=0&controls=1&loop=1`;
+  document.getElementById('music-mood-label').textContent=mood;
+  document.getElementById('music-section').className='music-section show';
+}
+
 async function getWeather(cityOverride){
   const city=(cityOverride||document.getElementById('city').value).trim();
   if(!city)return;
   document.getElementById('city').value=city;
   showLoading(true);showError(false);showCards(false);
+  // Hide AI and music on new search
+  document.getElementById('ai-section').className='ai-section';
+  document.getElementById('music-section').className='music-section';
   try{
     const res=await fetch(`${BASE}/api/weather/${encodeURIComponent(city)}`);
     if(!res.ok)throw new Error();
@@ -467,6 +558,8 @@ async function getWeather(cityOverride){
     showCards(true);
     loadHistory();
     loadHealth(d.city);
+    loadAIReport(d.city, d.temperature, d.condition, d.humidity, d.wind);
+    loadMusic(d.condition);
     const saved=localStorage.getItem('preferredCity');
     document.getElementById('save-btn').textContent=saved&&saved.toLowerCase()===d.city.toLowerCase()?'⭐ Preferred Location':'⭐ Save as Preferred Location';
     document.querySelector('.main').scrollIntoView({behavior:'smooth'});
